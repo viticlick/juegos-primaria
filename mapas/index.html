@@ -188,14 +188,14 @@ p{margin:0}
 }
 
 /* móvil */
-@media (max-width:600px){
+@media (max-width:600px), (orientation:portrait) and (max-width:1100px){
   #app{padding:10px 10px 32px}
   .mapwrap{margin:0 -4px;border-radius:16px}
   .zoomui button{width:46px;height:46px;font-size:1.3rem}
   .opt{min-height:58px}
 }
 #mapslot::after{content:"👆 Arrastra el mapa para moverte, o gira el móvil para verlo entero";display:none;margin-top:8px;text-align:center;font-size:.9rem;font-weight:700;color:var(--ink2)}
-@media (max-width:600px) and (orientation:portrait){#mapslot::after{display:block}}
+@media (orientation:portrait) and (max-width:1100px){#mapslot::after{display:block}}
 @media (max-height:500px) and (orientation:landscape){#app{max-width:none;padding:8px 14px 24px}}
 </style>
 </head>
@@ -348,7 +348,7 @@ function makeMap(o={}){
   const vb={x:0,y:0,w:D.W,h:D.H};
   const MINW=D.W/6;
   /* en móvil vertical el mapa se hace más alto (y se arrastra) en vez de verse diminuto */
-  const mq=!o.static&&window.matchMedia?matchMedia('(max-width:600px) and (orientation:portrait)'):null;
+  const mq=!o.static&&window.matchMedia?matchMedia('(orientation:portrait) and (max-width:1100px)'):null;
   const asp=()=>mq&&mq.matches?0.8:D.H/D.W;
   const wmax=()=>Math.min(D.W,D.H/asp());
   const rect=()=>svg.getBoundingClientRect();
