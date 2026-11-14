@@ -186,6 +186,17 @@ p{margin:0}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* móvil */
+@media (max-width:600px){
+  #app{padding:10px 10px 32px}
+  .mapwrap{margin:0 -4px;border-radius:16px}
+  .zoomui button{width:46px;height:46px;font-size:1.3rem}
+  .opt{min-height:58px}
+}
+#mapslot::after{content:"👆 Arrastra el mapa para moverte, o gira el móvil para verlo entero";display:none;margin-top:8px;text-align:center;font-size:.9rem;font-weight:700;color:var(--ink2)}
+@media (max-width:600px) and (orientation:portrait){#mapslot::after{display:block}}
+@media (max-height:500px) and (orientation:landscape){#app{max-width:none;padding:8px 14px 24px}}
 </style>
 </head>
 <body>
@@ -336,17 +347,21 @@ function makeMap(o={}){
   const svg=$('svg',wrap),lab=$('.labels',svg);
   const vb={x:0,y:0,w:D.W,h:D.H};
   const MINW=D.W/6;
+  /* en móvil vertical el mapa se hace más alto (y se arrastra) en vez de verse diminuto */
+  const mq=!o.static&&window.matchMedia?matchMedia('(max-width:600px) and (orientation:portrait)'):null;
+  const asp=()=>mq&&mq.matches?0.8:D.H/D.W;
+  const wmax=()=>Math.min(D.W,D.H/asp());
   const rect=()=>svg.getBoundingClientRect();
   function fit(){const cw=rect().width||360;const px=cw<520?11:13;lab.style.fontSize=(px*vb.w/cw)+'px';}
   function apply(){
-    vb.w=Math.min(D.W,Math.max(MINW,vb.w));vb.h=vb.w*D.H/D.W;
+    vb.w=Math.min(wmax(),Math.max(MINW,vb.w));vb.h=vb.w*asp();
     vb.x=Math.min(Math.max(0,vb.x),D.W-vb.w);vb.y=Math.min(Math.max(0,vb.y),D.H-vb.h);
     svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);fit();
   }
   const ux=cx=>vb.x+(cx-rect().left)/rect().width*vb.w;
   const uy=cy=>vb.y+(cy-rect().top)/rect().height*vb.h;
   function zoomAt(f,cx,cy){
-    const nw=Math.min(D.W,Math.max(MINW,vb.w/f));
+    const nw=Math.min(wmax(),Math.max(MINW,vb.w/f));
     vb.x=cx-(cx-vb.x)*(nw/vb.w);vb.y=cy-(cy-vb.y)*(nw/vb.w);vb.w=nw;apply();
   }
   let raf=0;
@@ -358,8 +373,8 @@ function makeMap(o={}){
     raf=requestAnimationFrame(step);
   }
   const api={el:wrap,svg,onTap:o.onTap||null};
-  api.reset=(anim)=>{if(anim)animTo({x:0,y:0,w:D.W});else{vb.x=0;vb.y=0;vb.w=D.W;apply();}};
-  api.zoomTo=id=>{const p=D.labels[id];const w=id==='an'?D.W/1.6:D.W/(isOcean(id)?1.8:2.2);animTo({x:p[0]-w/2,y:p[1]-w*D.H/D.W/2,w});};
+  api.reset=(anim)=>{const w=wmax(),t={x:(D.W-w)/2,y:(D.H-w*asp())/2,w};if(anim)animTo(t);else{Object.assign(vb,t);apply();}};
+  api.zoomTo=id=>{const p=D.labels[id];const w=Math.min(wmax(),id==='an'?D.W/1.6:D.W/(isOcean(id)?1.8:2.2));animTo({x:p[0]-w/2,y:p[1]-w*asp()/2,w});};
   api.setFocus=id=>{svg.classList.toggle('focus',!!id);$$('[data-reg]',svg).forEach(p=>{p.classList.toggle('hl',!!id&&p.dataset.reg===id);p.classList.remove('ok');});};
   api.mark=(id,cls,ms)=>{$$('[data-reg]',svg).forEach(p=>{if(p.dataset.reg===id){p.classList.add(cls);if(ms)setTimeout(()=>p.classList.remove(cls),ms);}});};
   api.showLabels=ids=>{
@@ -403,6 +418,7 @@ function makeMap(o={}){
       if(b.dataset.z==='in')zoomAt(1.6,cx,cy);else if(b.dataset.z==='out')zoomAt(1/1.6,cx,cy);else api.reset(true);
     });
   }
+  if(mq){let last=mq.matches;api.reset(false);window.addEventListener('resize',()=>{if(!svg.isConnected)return;if(mq.matches!==last){last=mq.matches;api.reset(false);}else apply();});}
   if(window.ResizeObserver)new ResizeObserver(fit).observe(svg);
   requestAnimationFrame(fit);
   return api;

@@ -168,6 +168,15 @@ p{margin:0}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* móvil */
+@media (max-width:600px){
+  #app{padding:10px 10px 32px}
+  .pair{grid-template-columns:1fr}
+  .pair .cap{font-size:.95rem}
+  .opt{min-height:58px}
+}
+@media (max-height:500px) and (orientation:landscape){#app{max-width:none;padding:8px 14px 24px}}
 </style>
 </head>
 <body>
