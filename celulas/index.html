@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de Células</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Mulish:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F1F6EE; --card:#FFFFFF; --ink:#1E1B3A; --ink2:#5A5778; --line:#D3DBC9;
+  --brand:#4B3FB8; --brand-d:#33298C; --brand-ink:#FFFFFF; --sun:#FFD04A;
+  --ok:#16915A; --ok-bg:#DDF4E6; --bad:#D9423A; --bad-bg:#FCE3E0;
+  --animal:#D6336C; --plant:#2F8F44;
+  --font-d:'Fredoka',ui-rounded,'Arial Rounded MT Bold',system-ui,sans-serif;
+  --font-b:'Mulish',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13112A; --card:#1F1C42; --ink:#EEEBFF; --ink2:#A9A5D0; --line:#38336B;
+    --brand:#8F85FF; --brand-d:#5F55D6; --brand-ink:#0F0C2A;
+    --ok:#55D68F; --ok-bg:#12402E; --bad:#FF7D72; --bad-bg:#4A1F23; --animal:#FF7FA8; --plant:#6FD07F;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13112A; --card:#1F1C42; --ink:#EEEBFF; --ink2:#A9A5D0; --line:#38336B;
+  --brand:#8F85FF; --brand-d:#5F55D6; --brand-ink:#0F0C2A;
+  --ok:#55D68F; --ok-bg:#12402E; --bad:#FF7D72; --bad-bg:#4A1F23; --animal:#FF7FA8; --plant:#6FD07F;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);font-weight:700;font-size:16px;line-height:1.45;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+h1,h2,h3{font-family:var(--font-d);font-weight:700;line-height:1.1;margin:0}
+p{margin:0}
+#app{max-width:720px;margin:0 auto;padding:14px 14px 40px}
+
+.btn{border:0;border-radius:999px;padding:12px 22px;min-height:48px;font-family:var(--font-d);font-weight:600;font-size:1.1rem;background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);box-shadow:0 4px 0 var(--brand-d)}
+.btn.primary:active{box-shadow:0 1px 0 var(--brand-d)}
+.btn.wide{width:100%}
+.btn.small{min-height:40px;padding:8px 16px;font-size:1rem}
+.row{display:flex;gap:10px;align-items:center}
+.row.sb{justify-content:space-between}
+.gap{height:12px}
+
+/* home */
+.hero{text-align:center;padding:6px 0 4px}
+.hero h1{font-size:clamp(2rem,8vw,2.8rem)}
+.hero .sub{color:var(--ink2);margin:6px auto 12px;max-width:34ch}
+.pill{display:inline-block;min-height:34px;margin-top:10px;padding:6px 14px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-size:.95rem}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:14px}
+.rank{margin:14px 0}
+.rank .who{font-family:var(--font-d);font-size:1.25rem;font-weight:600}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:var(--sun);border-radius:99px;transition:width .5s}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:.95rem;color:var(--ink2);margin-top:8px}
+.set{margin:14px 0 6px}
+.set h3{font-size:1rem;margin-bottom:6px;color:var(--ink2);font-family:var(--font-b);font-weight:800}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;min-height:46px;border-radius:14px;border:2px solid var(--line);background:var(--card);font-weight:800;font-size:.95rem;padding:6px 4px}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.note{font-size:.88rem;color:var(--ink2);margin-top:6px;font-weight:600}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.mode{display:flex;flex-direction:column;gap:2px;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:20px;padding:12px;min-height:116px;box-shadow:0 4px 0 var(--line)}
+.mode:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.mode .em{font-size:1.8rem;line-height:1}
+.mode b{font-family:var(--font-d);font-size:1.15rem;font-weight:600;line-height:1.1;margin-top:6px}
+.mode .d{font-size:.88rem;color:var(--ink2);font-weight:600;line-height:1.25}
+.mode.full{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center;gap:12px}
+.mode.full .em{font-size:2.2rem}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.top .x{flex:none;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--card);font-size:1.1rem}
+.prog{flex:1;height:14px;background:var(--line);border-radius:99px;overflow:hidden}
+.prog>i{display:block;height:100%;background:var(--ok);width:0;transition:width .4s;border-radius:99px}
+.hud{flex:none;font-family:var(--font-d);font-weight:600;font-size:1.1rem;white-space:nowrap}
+.hud .k{margin-left:6px}
+.bump{animation:bump .4s}
+@keyframes bump{50%{transform:scale(1.3)}}
+
+/* microscope lens */
+.one,.pair{display:grid;gap:8px}
+.pair{grid-template-columns:1fr 1fr}
+.lens{position:relative;border-radius:24px;overflow:hidden;border:3px solid var(--line);background:radial-gradient(circle at 50% 42%,#2B2663 0%,#16132F 78%);padding:6px 6px 0;user-select:none;-webkit-user-select:none}
+.cap{padding:4px 0 8px;text-align:center;font-family:var(--font-d);font-weight:600;font-size:.95rem;color:#fff}
+.pair .cap{font-size:.82rem}
+.cap.animal{color:#FFB1CC}.cap.plant{color:#A8F0B3}
+.cell{display:block;width:100%;height:auto}
+.part{transition:opacity .25s}
+.cell.focus .part:not(.hl){opacity:.2}
+.part.hl{animation:glow 1.1s ease-in-out infinite}
+.part.hl.ok{animation:none;filter:drop-shadow(0 0 7px #5CE08F)}
+.part.bad{animation:none;filter:drop-shadow(0 0 8px #FF6B5E)}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 3px #FFE066)}50%{filter:drop-shadow(0 0 10px #FFE066)}}
+.lab{text-anchor:middle;dominant-baseline:middle;font-family:var(--font-d);font-weight:600;fill:#fff;stroke:#16132F;stroke-width:.3em;paint-order:stroke;stroke-linejoin:round;pointer-events:none}
+.hero .part{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+
+/* panels */
+.panel{margin-top:12px}
+.ask{color:var(--ink2);font-size:.95rem}
+.target{font-size:clamp(1.4rem,6vw,1.9rem);margin:2px 0 6px}
+.msg{min-height:1.5em;color:var(--ink2);font-size:.95rem}
+.hintbox{margin-top:6px;padding:8px 12px;border-radius:14px;background:color-mix(in srgb,var(--sun) 28%,var(--card));font-size:.95rem;font-weight:700}
+.opts{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+.opt{min-height:54px;text-align:left;padding:10px 16px;border-radius:16px;border:2px solid var(--line);background:var(--card);font-family:var(--font-d);font-size:1.15rem;font-weight:500;box-shadow:0 3px 0 var(--line)}
+.opt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad);box-shadow:none}
+.opt[disabled]{opacity:.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{min-height:46px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-family:var(--font-d);font-weight:500;font-size:1.02rem;box-shadow:0 3px 0 var(--line)}
+.chip[aria-pressed="true"]{background:var(--sun);color:#3A2A00;border-color:var(--sun)}
+.fb{border-radius:20px;padding:14px;border:2px solid}
+.fb.ok{background:var(--ok-bg);border-color:var(--ok)}
+.fb.bad{background:var(--bad-bg);border-color:var(--bad)}
+.fbh{display:flex;gap:12px;align-items:center}
+.fbi{font-size:2rem}
+.fbh b{font-family:var(--font-d);font-size:1.25rem;font-weight:600;line-height:1.15}
+.pts{display:block;font-size:.95rem;color:var(--ink2);font-weight:700}
+.fact{margin:10px 0 12px;font-weight:700}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+
+/* learn */
+.info .head{display:flex;align-items:center;gap:12px}
+.info .big{font-size:2.5rem;line-height:1}
+.info h2{font-size:1.5rem}
+.info p.fn{margin-top:10px}
+.info p.ana{margin-top:6px;color:var(--ink2)}
+.where{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tag{padding:6px 12px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-size:.92rem}
+.tag.yes{border-color:var(--ok);background:var(--ok-bg)}
+.tag.no{opacity:.7}
+.tag.new{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 25%,var(--card))}
+.difs{margin:8px 0 0;padding-left:20px;font-weight:700}
+.difs li{margin:6px 0}
+
+/* result + progress */
+.res{text-align:center;padding:10px 0}
+.stars{font-size:3rem;letter-spacing:6px}
+.res h2{font-size:2rem;margin:6px 0}
+.big-score{font-family:var(--font-d);font-size:2.6rem;font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 14px}
+.prow{display:grid;grid-template-columns:34px 1fr 90px;gap:10px;align-items:center;padding:8px 0;border-bottom:2px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow .e{font-size:1.5rem}
+.prow .n{font-family:var(--font-d);font-weight:500;font-size:1.05rem;line-height:1.15}
+.prow .s{font-size:.82rem;color:var(--ink2);font-weight:700}
+.prow .bar{margin:0;height:10px}
+.prow .bar>i{background:var(--ok)}
+.badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.badge{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:14px;border:2px solid var(--line);font-size:.9rem;line-height:1.2}
+.badge .e{font-size:1.5rem}
+.badge.off{opacity:.45;filter:grayscale(1)}
+
+@media (min-width:600px){
+  .opts{grid-template-columns:1fr 1fr}
+  .modes{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>Este juego necesita JavaScript.</noscript>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const app=$('#app');
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ---------- contenido ---------- */
+const P={
+ mem:{n:'Membrana plasmática',e:'🚪',w:'both',fn:'Rodea la célula y decide qué sustancias entran y cuáles salen.',ana:'Es como el portero de un edificio.',note:'La tienen todas las células, tanto animales como vegetales.'},
+ cit:{n:'Citoplasma',e:'🫧',w:'both',fn:'Es una sustancia parecida a una gelatina donde flotan los orgánulos.',ana:'Es como la gelatina de un flan con frutas dentro.',note:'En él ocurren muchas reacciones químicas de la célula.'},
+ nuc:{n:'Núcleo',e:'🧠',w:'both',fn:'Guarda el ADN y da las órdenes a toda la célula.',ana:'Es como el director de una orquesta.',note:'Que tengan núcleo es lo que hace eucariotas a estas células.'},
+ mit:{n:'Mitocondrias',e:'⚡',w:'both',fn:'Sacan energía de los alimentos para que la célula pueda funcionar.',ana:'Son como las centrales eléctricas de la célula.',note:'Las células vegetales también tienen mitocondrias.'},
+ rib:{n:'Ribosomas',e:'⚙️',w:'both',fn:'Fabrican proteínas. Son puntitos muy pequeños.',ana:'Son como obreros que fabrican piezas en una fábrica.',note:'Unos flotan en el citoplasma y otros están pegados al retículo.'},
+ ret:{n:'Retículo endoplasmático',e:'🛣️',w:'both',fn:'Es una red de tubos y sacos que transporta sustancias por dentro de la célula.',ana:'Es como las carreteras de una ciudad.',note:'Cuando tiene ribosomas pegados se llama retículo rugoso.'},
+ gol:{n:'Aparato de Golgi',e:'📦',w:'both',fn:'Recibe sustancias, las empaqueta y las envía adonde se necesitan.',ana:'Es como la oficina de correos de la célula.',note:'Se ve como una pila de sacos aplastados.'},
+ lis:{n:'Lisosomas',e:'🧹',w:'animal',fn:'Tienen sustancias que digieren los restos y lo que ya no sirve.',ana:'Son como el equipo de limpieza de la célula.',note:'Se suelen estudiar en la célula animal. En la vegetal, la limpieza la hace sobre todo la vacuola.'},
+ vac:{n:'Vacuola',e:'💧',w:'both',fn:'Guarda agua y otras sustancias.',ana:'Es como un depósito o una despensa.',note:'En la célula animal son pequeñas y hay varias. En la vegetal hay una enorme en el centro.'},
+ par:{n:'Pared celular',e:'🧱',w:'plant',fn:'Es una capa rígida que protege la célula y le da su forma.',ana:'Es como la muralla de un castillo.',note:'Está hecha de celulosa. La célula animal no la tiene.'},
+ clo:{n:'Cloroplastos',e:'🌿',w:'plant',fn:'Hacen la fotosíntesis: usan la luz del sol para fabricar alimento.',ana:'Son como cocinas que funcionan con energía solar.',note:'Son verdes por la clorofila. La célula animal no los tiene.'}
+};
+const CELLS={animal:['mem','cit','nuc','mit','rib','ret','gol','lis','vac'],plant:['mem','cit','nuc','mit','rib','ret','gol','vac','par','clo']};
+const ALL=['mem','cit','nuc','mit','rib','ret','gol','lis','vac','par','clo'];
+const ANCH={
+ animal:{mem:[290,34],cit:[250,282],nuc:[205,150],mit:[228,66],rib:[185,78],ret:[292,143],gol:[107,112],lis:[110,170],vac:[332,70]},
+ plant:{par:[95,11],mem:[290,26],cit:[62,100],nuc:[335,92],mit:[322,202],rib:[296,236],ret:[336,156],gol:[62,146],vac:[200,155],clo:[62,70]}
+};
+const WH={both:'En las dos',animal:'Solo en la animal',plant:'Solo en la vegetal'};
+const BADGES={first:['🥇','Primer acierto'],streak5:['🔥','Racha de 5'],cell:['🧩','Célula completa'],mix:['🏆','Campeón del reto'],animal:['🐾','Experto en célula animal'],plant:['🌱','Experto en célula vegetal'],master:['🎓','Genio de la célula']};
+const RANKS=[[0,'Curioso','🧐'],[120,'Ayudante','🥼'],[350,'Microscopista','🔬'],[800,'Científico','🧪'],[1600,'Gran investigador','🏅']];
+const MODES=[
+ {id:'explore',em:'🔬',t:'Explora',d:'Toca las partes y descúbrelas'},
+ {id:'compare',em:'🆚',t:'Compara',d:'Animal y vegetal, lado a lado'},
+ {id:'locate',em:'📍',t:'¿Dónde está?',d:'Toca la parte en la célula'},
+ {id:'name',em:'🏷️',t:'¿Cómo se llama?',d:'Marco una parte, tú eliges'},
+ {id:'guess',em:'🕵️',t:'Adivina la parte',d:'Te cuento qué hace'},
+ {id:'classify',em:'⚖️',t:'¿Animal o vegetal?',d:'¿En qué célula está?'},
+ {id:'label',em:'🧩',t:'Completa la célula',d:'Coloca todas las etiquetas'},
+ {id:'mix',em:'🏆',t:'Reto mixto',d:'10 preguntas de todo tipo',full:true}
+];
+
+/* ---------- dibujo de las células ---------- */
+const mito=(x,y,a)=>`<g transform="translate(${x} ${y}) rotate(${a})"><ellipse rx="30" ry="14" fill="#F6A58B" stroke="#D8613E" stroke-width="3"/><path d="M-20 2 q5 -10 10 0 t10 0 t10 0 t10 0" fill="none" stroke="#D8613E" stroke-width="2.5" stroke-linecap="round"/></g>`;
+const chlo=(x,y,a)=>`<g transform="translate(${x} ${y}) rotate(${a})"><ellipse rx="27" ry="15" fill="#62C94F" stroke="#2E8B2A" stroke-width="3"/><g fill="#2E8B2A" fill-opacity=".65"><ellipse cx="-12" rx="6" ry="8"/><ellipse cx="0" rx="6" ry="8"/><ellipse cx="12" rx="6" ry="8"/></g></g>`;
+const ribs=pts=>pts.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="11" fill="transparent"/><circle cx="${x}" cy="${y}" r="4.6" fill="#2B2A5C" stroke="#fff" stroke-opacity=".6"/>`).join('');
+const golgi=(x,y)=>`<g transform="translate(${x} ${y})" fill="none" stroke="#F2C230" stroke-width="7" stroke-linecap="round"><path d="M0 16 Q30 -2 60 16"/><path d="M4 28 Q32 12 58 28"/><path d="M8 40 Q34 26 54 40"/><path d="M12 52 Q35 40 50 52"/></g>`;
+const lyso=(x,y)=>`<circle cx="${x}" cy="${y}" r="12" fill="#74CFA8" stroke="#2E9A74" stroke-width="3"/><circle cx="${x-3}" cy="${y-2}" r="2.2" fill="#2E9A74"/><circle cx="${x+3}" cy="${y+3}" r="2.2" fill="#2E9A74"/>`;
+const vacS=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#CFEBF8" stroke="#62AFD3" stroke-width="3"/>`;
+const er=ds=>`<g fill="none" stroke="#F0A04B" stroke-width="8" stroke-linecap="round">${ds.map(d=>`<path d="${d}"/>`).join('')}</g>`;
+const nuc=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#C7B5F5" stroke="#7B5FD0" stroke-width="4"/><circle cx="${x+r*.25}" cy="${y-r*.15}" r="${r*.33}" fill="#8B6FE0"/><circle cx="${x-r*.4}" cy="${y+r*.35}" r="3" fill="#8B6FE0"/><circle cx="${x-r*.1}" cy="${y+r*.55}" r="2.5" fill="#8B6FE0"/>`;
+const part=(id,inner)=>`<g class="part" data-p="${id}">${inner}</g>`;
+const ANIMAL_BLOB='M200 22 C285 14 372 60 376 150 C380 235 310 304 215 300 C150 312 52 290 30 200 C12 120 70 30 200 22 Z';
+const VAC_BIG='M120 90 C120 60 170 55 215 60 C260 65 290 90 285 150 C282 215 270 250 210 252 C150 255 112 240 110 180 C108 140 120 120 120 90 Z';
+function animalSVG(){
+  return `<svg class="cell" viewBox="0 0 400 320" role="img" aria-label="Dibujo de una célula animal">`
+  +part('cit',`<path d="${ANIMAL_BLOB}" fill="#FBD0DE"/>`)
+  +part('ret',er(['M262 112 C288 104 306 122 292 138 C280 152 304 166 292 182','M305 108 C330 102 345 122 332 138 C320 152 342 168 330 188']))
+  +part('rib',ribs([[292,138],[298,172],[333,140],[338,176],[150,95],[185,78],[300,80],[50,150],[215,224],[180,226],[130,236],[250,282],[60,176]]))
+  +part('gol',golgi(78,84))
+  +part('lis',lyso(110,170)+lyso(298,252)+lyso(322,222))
+  +part('vac',vacS(332,70,12)+vacS(252,240,12)+vacS(140,60,10))
+  +part('mit',mito(175,258,8)+mito(228,66,-8)+mito(88,224,-30))
+  +part('nuc',nuc(205,150,52))
+  +part('mem',`<path d="${ANIMAL_BLOB}" fill="none" stroke="#E0457F" stroke-width="6"/><path d="${ANIMAL_BLOB}" fill="none" stroke="transparent" stroke-width="22"/>`)
+  +`<g class="labels"></g></svg>`;
+}
+function plantSVG(){
+  return `<svg class="cell" viewBox="0 0 400 320" role="img" aria-label="Dibujo de una célula vegetal">`
+  +part('cit',`<rect x="18" y="18" width="364" height="284" rx="22" fill="#E6F5C8"/>`)
+  +part('vac',`<path d="${VAC_BIG}" fill="#CFEBF8" stroke="#62AFD3" stroke-width="3"/>`)
+  +part('ret',er(['M300 140 C318 150 336 130 354 142 C362 147 368 143 372 138','M300 156 C318 166 336 146 354 158 C362 163 368 159 372 154','M300 172 C318 182 336 162 354 174 C362 179 368 175 372 170']))
+  +part('rib',ribs([[318,148],[344,138],[330,170],[358,170],[100,40],[130,38],[296,236],[95,110],[30,200],[100,250],[270,272],[295,40]]))
+  +part('gol',golgi(34,112))
+  +part('mit',mito(322,202,8)+mito(62,192,-10)+mito(140,282,5))
+  +part('clo',chlo(62,70,-20)+chlo(180,34,0)+chlo(335,262,10)+chlo(58,232,12)+chlo(212,280,-4))
+  +part('nuc',nuc(335,92,34))
+  +part('mem',`<rect x="18" y="18" width="364" height="284" rx="22" fill="none" stroke="#E0709A" stroke-width="4"/><rect x="18" y="18" width="364" height="284" rx="22" fill="none" stroke="transparent" stroke-width="8"/>`)
+  +part('par',`<rect x="10" y="10" width="380" height="300" rx="28" fill="none" stroke="#3F9A3A" stroke-width="12"/><rect x="10" y="10" width="380" height="300" rx="28" fill="none" stroke="#2A7527" stroke-width="2.5" stroke-dasharray="9 7"/><rect x="10" y="10" width="380" height="300" rx="28" fill="none" stroke="transparent" stroke-width="12"/>`)
+  +`<g class="labels"></g></svg>`;
+}
+function makeLens(cells,o={}){
+  const wrap=document.createElement('div');
+  wrap.className=cells.length>1?'pair':'one';
+  wrap.innerHTML=cells.map(c=>`<div class="lens" data-cell="${c}">${c==='animal'?animalSVG():plantSVG()}<div class="cap ${c}">${c==='animal'?'🐾 Célula animal':'🌱 Célula vegetal'}</div></div>`).join('');
+  const svgs=$$('svg',wrap);
+  const api={el:wrap,onTap:o.onTap||null};
+  const each=fn=>svgs.forEach(s=>fn(s,s.closest('.lens').dataset.cell));
+  function fit(){each(s=>{const cw=s.getBoundingClientRect().width||340;$('.labels',s).style.fontSize=(Math.max(12,Math.min(15,cw/28))*400/cw)+'px';});}
+  api.setFocus=ids=>{
+    ids=ids?[].concat(ids):null;
+    each(s=>{s.classList.toggle('focus',!!ids);$$('.part',s).forEach(p=>{p.classList.toggle('hl',!!ids&&ids.includes(p.dataset.p));p.classList.remove('ok');});});
+  };
+  api.mark=(id,cls,ms)=>each(s=>$$('.part',s).forEach(p=>{if(p.dataset.p===id){p.classList.add(cls);if(ms)setTimeout(()=>p.classList.remove(cls),ms);}}));
+  api.showLabels=ids=>{
+    if(cells.length>1)return;
+    each((s,c)=>{$('.labels',s).innerHTML=ids.filter(id=>ANCH[c][id]).map(id=>`<text class="lab" x="${ANCH[c][id][0]}" y="${ANCH[c][id][1]}">${P[id].n}</text>`).join('');});fit();
+  };
+  wrap.addEventListener('click',e=>{const p=e.target.closest('.part');if(p&&api.onTap)api.onTap(p.dataset.p,p.closest('.lens').dataset.cell);});
+  if(window.ResizeObserver)new ResizeObserver(fit).observe(svgs[0]);
+  requestAnimationFrame(fit);
+  return api;
+}
+
+/* ---------- estado ---------- */
+const KEY='laboratorio-celulas-v1';
+const DEF={level:1,xp:0,stars:0,rounds:0,bestStreak:0,prog:{},badges:[],seen:{}};
+function load(){try{const r=localStorage.getItem(KEY);if(r)return Object.assign({},DEF,JSON.parse(r));}catch(e){}return JSON.parse(JSON.stringify(DEF));}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const mast=id=>(S.prog[id]&&S.prog[id].m)||0;
+function upd(id,v){const p=S.prog[id]||(S.prog[id]={m:0,n:0});p.m=p.m*0.7+v*0.3;p.n++;}
+function rankInfo(){let i=0;RANKS.forEach((r,k)=>{if(S.xp>=r[0])i=k;});const nx=RANKS[i+1];return{i,cur:RANKS[i],next:nx,pct:nx?(S.xp-RANKS[i][0])/(nx[0]-RANKS[i][0]):1};}
+const nOpts=()=>[3,4,5][S.level-1];
+function wpick(list,n,key){
+  const pool=list.slice(),out=[];
+  while(out.length<n&&pool.length){
+    const w=pool.map(x=>0.25+(1-mast(key(x))));
+    let r=Math.random()*w.reduce((a,b)=>a+b,0),k=0;
+    while(k<pool.length-1&&r>w[k]){r-=w[k];k++;}
+    out.push(pool.splice(k,1)[0]);
+  }
+  return out;
+}
+const whereTags=id=>{const w=P[id].w;return `<span class="tag ${w!=='plant'?'yes':'no'}">🐾 Animal ${w!=='plant'?'✔':'✖'}</span><span class="tag ${w!=='animal'?'yes':'no'}">🌱 Vegetal ${w!=='animal'?'✔':'✖'}</span>`;};
+
+/* ---------- vistas ---------- */
+let lens=null,tapHandler=null,G=null;
+
+function home(){
+  const r=rankInfo();
+  app.innerHTML=`
+  <header class="hero">
+    <h1>Laboratorio de Células</h1>
+    <p class="sub">Las células eucariotas tienen núcleo. ¡Descubre qué hay dentro de una animal y de una vegetal!</p>
+    <div id="heromap"></div>
+    <p class="pill" id="pill">Toca una parte de la célula</p>
+  </header>
+  <section class="card rank">
+    <div class="row sb"><div class="who">${r.cur[2]} ${r.cur[1]}</div><div>${S.xp} puntos</div></div>
+    <div class="bar"><i style="width:${Math.round(r.pct*100)}%"></i></div>
+    <div class="stats"><span>${r.next?`Te faltan ${r.next[0]-S.xp} para ser ${r.next[1]}`:'¡Has llegado al máximo!'}</span></div>
+    <div class="stats"><span>⭐ ${S.stars}</span><span>🔥 mejor racha ${S.bestStreak}</span><span>🎮 ${S.rounds} partidas</span></div>
+  </section>
+  <section class="set"><h3>Nivel</h3>
+    <div class="seg" id="lv">
+      <button type="button" data-v="1">🌱 Fácil</button><button type="button" data-v="2">🌿 Medio</button><button type="button" data-v="3">🌳 Experto</button>
+    </div><p class="note" id="lvnote"></p></section>
+  <section class="modes">
+    ${MODES.map(m=>`<button type="button" class="mode ${m.full?'full':''}" data-mode="${m.id}"><span class="em">${m.em}</span><span><b>${m.t}</b><br><span class="d">${m.d}</span></span></button>`).join('')}
+  </section>
+  <button type="button" class="btn wide" id="goprog">🏅 Mi progreso</button>`;
+  const hl=makeLens(['animal','plant'],{onTap:id=>{$('#pill').textContent=`${P[id].e} ${P[id].n}: ${P[id].fn}`;}});
+  $('#heromap').appendChild(hl.el);
+  $$('.part',hl.el).forEach((p,i)=>p.style.animationDelay=(i%10)*.07+'s');
+  const paint=()=>{
+    $$('#lv button').forEach(b=>b.setAttribute('aria-pressed',String(S.level)===b.dataset.v));
+    $('#lvnote').textContent=['Con pistas y 3 opciones.','Con 4 opciones y menos pistas.','Sin pistas y con 5 opciones. ¡Solo para expertos!'][S.level-1];
+  };
+  paint();
+  $$('#lv button').forEach(b=>b.onclick=()=>{S.level=+b.dataset.v;save();paint();});
+  $$('.mode').forEach(b=>b.onclick=()=>{const m=b.dataset.mode;m==='explore'?explore():m==='compare'?compare():play(m);});
+  $('#goprog').onclick=progress;
+}
+
+function explore(){
+  let cell='animal',cur=null,all=false;
+  app.innerHTML=`
+  <div class="top"><button type="button" class="x" id="back" aria-label="Volver al menú">✕</button><h2 style="flex:1">Explora</h2><button type="button" class="btn small" id="tg"></button></div>
+  <div class="seg" id="tabs"><button type="button" data-c="animal">🐾 Célula animal</button><button type="button" data-c="plant">🌱 Célula vegetal</button></div>
+  <div class="gap"></div><div id="slot"></div>
+  <section class="panel card info" id="panel"></section>
+  <p class="ask" style="margin-top:12px">También puedes elegir una parte aquí:</p><div class="chips" id="chips"></div>`;
+  const panel=$('#panel'),tg=$('#tg');
+  const labs=()=>all?CELLS[cell]:(cur?[cur]:[]);
+  function build(){
+    $$('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===cell));
+    if(cur&&!CELLS[cell].includes(cur))cur=null;
+    lens=makeLens([cell],{onTap:sel});$('#slot').replaceChildren(lens.el);
+    $('#chips').innerHTML=CELLS[cell].map(id=>`<button type="button" class="chip" data-id="${id}" aria-pressed="${id===cur}">${P[id].e} ${P[id].n}</button>`).join('');
+    $$('.chip').forEach(c=>c.onclick=()=>sel(c.dataset.id));
+    tg.textContent=all?'🏷️ Nombres: sí':'🏷️ Nombres: no';
+    if(cur){show(cur);}else{panel.innerHTML=`<h2>¡Vamos a explorar!</h2><p class="fn">Toca cualquier parte de la célula (o un botón de abajo) para saber qué es y para qué sirve.</p>`;lens.setFocus(null);}
+    lens.showLabels(labs());
+  }
+  function show(id){
+    const I=P[id];lens.setFocus(id);lens.showLabels(labs());
+    $$('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.id===id));
+    panel.innerHTML=`<div class="head"><span class="big">${I.e}</span><div><h2>${I.n}</h2></div></div><p class="fn">${I.fn}</p><p class="ana">${I.ana}</p><div class="where">${whereTags(id)}</div><p class="ana">${I.note}</p>`;
+  }
+  function sel(id){if(!S.seen[id]){S.seen[id]=1;S.xp+=2;save();}cur=id;show(id);}
+  $$('#tabs button').forEach(b=>b.onclick=()=>{cell=b.dataset.c;build();});
+  tg.onclick=()=>{all=!all;tg.textContent=all?'🏷️ Nombres: sí':'🏷️ Nombres: no';lens.showLabels(labs());};
+  $('#back').onclick=home;build();
+}
+
+function compare(){
+  let cur='dif';
+  app.innerHTML=`
+  <div class="top"><button type="button" class="x" id="back" aria-label="Volver al menú">✕</button><h2 style="flex:1">Compara</h2></div>
+  <div id="slot"></div>
+  <section class="panel card info" id="panel"></section>
+  <p class="ask" style="margin-top:12px">Elige una parte para verla en las dos células:</p>
+  <div class="chips"><button type="button" class="chip" data-id="dif">⭐ Diferencias</button>${ALL.map(id=>`<button type="button" class="chip" data-id="${id}">${P[id].e} ${P[id].n}</button>`).join('')}</div>`;
+  lens=makeLens(['animal','plant'],{onTap:id=>show(id)});$('#slot').appendChild(lens.el);
+  const panel=$('#panel');
+  function show(id){
+    cur=id;$$('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.id===id));
+    if(id==='dif'){
+      lens.setFocus(['par','clo','lis','vac']);
+      panel.innerHTML=`<h2>¿En qué se diferencian?</h2><ul class="difs"><li>🧱 <b>Pared celular</b>: solo la vegetal.</li><li>🌿 <b>Cloroplastos</b>: solo la vegetal.</li><li>🧹 <b>Lisosomas</b>: solo la animal.</li><li>💧 <b>Vacuola</b>: pequeñas en la animal, una enorme en la vegetal.</li></ul><p class="ana" style="margin-top:8px">Todo lo demás lo tienen las dos, incluido el núcleo.</p>`;return;
+    }
+    if(!S.seen[id]){S.seen[id]=1;S.xp+=2;save();}
+    const I=P[id];lens.setFocus(id);
+    panel.innerHTML=`<div class="head"><span class="big">${I.e}</span><div><h2>${I.n}</h2><div class="ask">${WH[I.w]}</div></div></div><div class="where">${whereTags(id)}</div><p class="fn">${I.fn}</p><p class="ana">${I.note}</p>`;
+  }
+  $$('.chip').forEach(c=>c.onclick=()=>show(c.dataset.id));
+  $('#back').onclick=home;show('dif');
+}
+
+/* ---- juego ---- */
+function buildQs(mode){
+  const N=10;
+  if(mode==='label')return[{type:'label',cell:rnd(['animal','plant'])}];
+  const types=mode==='mix'?shuffle(['locate','locate','name','name','guess','guess','classify','classify','locate','name']):Array(N).fill(mode);
+  const out=[],prev=[];
+  types.forEach(ty=>{
+    let cell=rnd(['animal','plant']),t;
+    const pool=(ty==='locate'||ty==='name')?CELLS[cell]:ALL;
+    const cand=pool.filter(x=>!prev.slice(-3).includes(x));
+    t=wpick(cand,1,x=>x)[0];prev.push(t);
+    const w=P[t].w;if(ty!=='locate'&&ty!=='name')cell=w==='both'?cell:w;
+    out.push({type:ty,target:t,cell,attempts:0});
+  });
+  return out;
+}
+function play(mode){
+  G={mode,i:0,score:0,streak:0,maxStreak:0,ok:0,errs:{},qs:buildQs(mode),mistakes:0,placed:0};
+  app.innerHTML=`
+  <div class="top"><button type="button" class="x" id="back" aria-label="Salir al menú">✕</button><div class="prog"><i id="pg"></i></div><div class="hud"><span id="hs">⭐ 0</span><span class="k" id="hk"></span></div></div>
+  <div id="slot"></div>
+  <section class="panel" id="panel"></section>`;
+  $('#back').onclick=()=>{tapHandler=null;home();};
+  nextQ();
+}
+const panelEl=()=>$('#panel');
+function hud(bump){
+  const s=$('#hs'),k=$('#hk');if(!s)return;
+  s.textContent='⭐ '+G.score;k.textContent=G.streak>=2?'🔥 '+G.streak:'';
+  if(bump){s.classList.remove('bump');void s.offsetWidth;s.classList.add('bump');}
+  const q=G.qs[0];
+  $('#pg').style.width=Math.round((G.mode==='label'?G.placed/CELLS[q.cell].length:G.i/G.qs.length)*100)+'%';
+}
+function shake(){const p=panelEl();p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');}
+function nextQ(){
+  tapHandler=null;const q=G.qs[G.i];
+  lens=makeLens(q.type==='classify'?['animal','plant']:[q.cell],{onTap:(id,c)=>tapHandler&&tapHandler(id,c)});
+  $('#slot').replaceChildren(lens.el);hud();
+  ({locate:qLocate,name:qChoice,guess:qChoice,classify:qClassify,label:qLabel})[q.type](q);
+  panelEl().scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function award(q,how){
+  const base={first:10,second:5,fail:0}[how];
+  if(base>0)G.streak++;else G.streak=0;
+  const bonus=base>0?Math.min(10,Math.max(0,G.streak-2)*2):0;
+  G.maxStreak=Math.max(G.maxStreak,G.streak);G.score+=base+bonus;
+  G.ok+=how==='first'?1:how==='second'?.5:0;
+  upd(q.target,{first:1,second:.5,fail:0}[how]);
+  if(how==='fail')G.errs[q.target]=1;
+  hud(base>0);return base+bonus;
+}
+const cheer=()=>rnd(['¡Muy bien!','¡Exacto!','¡Perfecto!','¡Eso es!','¡Genial!']);
+function feedback(q,how,msg){
+  q.done=true;tapHandler=null;
+  lens.setFocus(q.target);if(how!=='fail')lens.mark(q.target,'ok');lens.showLabels([q.target]);
+  const pts=award(q,how),good=how!=='fail',last=G.i===G.qs.length-1,I=P[q.target];
+  const fact=q.type==='guess'?`${I.ana} ${I.note}`:q.type==='classify'?I.note:`${I.fn} ${I.ana}`;
+  panelEl().innerHTML=`<div class="fb ${good?'ok':'bad'}"><div class="fbh"><span class="fbi">${good?'🎉':'🤔'}</span><div><b>${msg}</b><span class="pts">${good?'+'+pts+' puntos':'Esta la repasamos otro día'}</span></div></div><p class="fact">💡 ${I.e} ${fact}</p><button type="button" class="btn primary wide" id="nx">${last?'Ver resultado':'Siguiente'}</button></div>`;
+  $('#nx').onclick=()=>{G.i++;if(G.i>=G.qs.length)result();else nextQ();};
+  panelEl().scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function qLocate(q){
+  const I=P[q.target];
+  panelEl().innerHTML=`<p class="ask">Toca en la célula ${q.cell==='animal'?'animal':'vegetal'}:</p><h2 class="target">${I.e} ${I.n}</h2>${S.level===1?`<p class="hintbox">Pista: ${I.fn}</p>`:''}<p class="msg" id="msg"></p>`;
+  tapHandler=id=>{
+    if(id===q.target){feedback(q,q.attempts===0?'first':'second',q.attempts===0?cheer():'¡Bien, a la segunda!');return;}
+    q.attempts++;lens.mark(id,'bad',700);shake();
+    if(q.attempts>=2){feedback(q,'fail',`Era ${I.n}. Mira cómo se ilumina.`);return;}
+    $('#msg').textContent=`Eso es ${P[id].n.toLowerCase()}. ¡Prueba otra vez!`;
+  };
+}
+function qChoice(q){
+  const I=P[q.target],isG=q.type==='guess';
+  lens.setFocus(isG?null:q.target);
+  const pool=isG?ALL:CELLS[q.cell];
+  const opts=shuffle([q.target,...shuffle(pool.filter(x=>x!==q.target)).slice(0,Math.min(nOpts(),pool.length)-1)]);
+  panelEl().innerHTML=isG
+   ?`<p class="ask">¿De qué parte de la célula hablo?</p><h2 class="target" style="font-size:1.25rem;line-height:1.25">${I.fn}</h2>${S.level===1?`<p class="hintbox">Pista: ${I.ana}</p>`:''}<p class="msg" id="msg"></p><div class="opts">${opts.map(o=>`<button type="button" class="opt" data-id="${o}">${P[o].e} ${P[o].n}</button>`).join('')}</div>`
+   :`<h2 class="target" style="font-size:1.3rem">¿Cómo se llama la parte marcada?</h2><p class="msg" id="msg"></p><div class="opts">${opts.map(o=>`<button type="button" class="opt" data-id="${o}">${P[o].n}</button>`).join('')}</div>`;
+  $$('.opt').forEach(b=>b.onclick=()=>{
+    if(b.dataset.id===q.target){feedback(q,q.attempts===0?'first':'second',q.attempts===0?cheer():'¡Bien, a la segunda!');return;}
+    q.attempts++;b.classList.add('bad');b.disabled=true;shake();
+    if(q.attempts>=2){feedback(q,'fail',`Era ${I.n}.`);return;}
+    $('#msg').textContent='Casi… ¡prueba otra vez!';
+  });
+}
+function qClassify(q){
+  const I=P[q.target];
+  panelEl().innerHTML=`<p class="ask">¿En qué célula está?</p><h2 class="target">${I.e} ${I.n}</h2><p class="msg" id="msg"></p><div class="opts"><button type="button" class="opt" data-id="animal">🐾 Solo en la animal</button><button type="button" class="opt" data-id="plant">🌱 Solo en la vegetal</button><button type="button" class="opt" data-id="both">🤝 En las dos</button></div>`;
+  $$('.opt').forEach(b=>b.onclick=()=>{
+    if(b.dataset.id===I.w){feedback(q,q.attempts===0?'first':'second',q.attempts===0?cheer():'¡Bien, a la segunda!');return;}
+    q.attempts++;b.classList.add('bad');b.disabled=true;shake();
+    if(q.attempts>=2){feedback(q,'fail',`${I.n}: ${WH[I.w].toLowerCase()}.`);return;}
+    $('#msg').textContent='Mira bien las dos células… ¡prueba otra vez!';
+  });
+}
+function qLabel(q){
+  const list=CELLS[q.cell],order=shuffle(list);let sel=null;const placed=[],errs={};
+  const cellName=q.cell==='animal'?'animal':'vegetal';
+  function paint(){
+    const left=order.filter(x=>!placed.includes(x));
+    panelEl().innerHTML=`<h2 class="target" style="font-size:1.25rem">Célula ${cellName}: elige un nombre y toca su lugar</h2><p class="msg" id="msg">Faltan ${left.length}</p><div class="chips">${left.map(id=>`<button type="button" class="chip" data-id="${id}" aria-pressed="${sel===id}">${P[id].n}</button>`).join('')}</div><div class="gap"></div><button type="button" class="btn small" id="hb">💡 Pista (−3 puntos)</button>`;
+    $$('.chip').forEach(c=>c.onclick=()=>{sel=sel===c.dataset.id?null:c.dataset.id;paint();});
+    $('#hb').onclick=()=>{if(!sel){$('#msg').textContent='Primero elige un nombre.';return;}G.mistakes++;errs[sel]=1;G.errs[sel]=1;lens.mark(sel,'bad',900);score();};
+  }
+  const score=()=>{G.score=Math.max(0,placed.length*10-G.mistakes*3);hud();};
+  paint();hud();
+  tapHandler=id=>{
+    if(!sel){$('#msg').textContent='Primero elige un nombre de la lista.';return;}
+    if(id===sel){
+      placed.push(sel);upd(sel,errs[sel]?.4:1);G.placed=placed.length;score();
+      lens.showLabels(placed);sel=null;hud(true);
+      if(placed.length===list.length){tapHandler=null;setTimeout(result,600);return;}
+      paint();
+    }else{
+      G.mistakes++;errs[sel]=1;G.errs[sel]=1;lens.mark(id,'bad',700);shake();score();
+      $('#msg').textContent=`Ahí está ${P[id].n.toLowerCase()}. ¡Prueba otra vez!`;
+    }
+  };
+}
+
+function result(){
+  tapHandler=null;
+  const label=G.mode==='label',N=label?CELLS[G.qs[0].cell].length:G.qs.length;
+  const acc=label?N/(N+G.mistakes):G.ok/N;
+  const stars=acc>=.9?3:acc>=.7?2:acc>=.4?1:0;
+  const before=rankInfo().i;
+  S.xp+=G.score;S.stars+=stars;S.rounds++;S.bestStreak=Math.max(S.bestStreak,G.maxStreak);
+  const got=[],add=id=>{if(!S.badges.includes(id)){S.badges.push(id);got.push(id);}};
+  if(G.ok>0||(label&&G.placed>0))add('first');
+  if(G.maxStreak>=5)add('streak5');
+  if(label&&G.mistakes===0)add('cell');
+  if(G.mode==='mix'&&acc>=.9)add('mix');
+  if(CELLS.animal.every(i=>mast(i)>=.7))add('animal');
+  if(CELLS.plant.every(i=>mast(i)>=.7))add('plant');
+  if(ALL.every(i=>mast(i)>=.85))add('master');
+  save();
+  const up=rankInfo().i>before,rev=Object.keys(G.errs);
+  const msg=stars===3?'¡Increíble!':stars===2?'¡Muy bien!':stars===1?'¡Buen intento!':'¡Sigue practicando!';
+  app.innerHTML=`<div class="res"><div class="stars" aria-label="${stars} estrellas">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div><h2>${msg}</h2>
+  <div class="big-score">${G.score} puntos</div>
+  <p class="ask">${label?`Colocaste ${N} etiquetas con ${G.mistakes} fallos`:`Acertaste ${Math.round(acc*100)}% · mejor racha ${G.maxStreak}`}</p>
+  ${up?`<p class="pill">🎖️ ¡Ahora eres ${rankInfo().cur[1]}!</p>`:''}
+  ${got.length?`<div class="tags">${got.map(b=>`<span class="tag new">${BADGES[b][0]} Nueva insignia: ${BADGES[b][1]}</span>`).join('')}</div>`:''}
+  ${rev.length?`<p class="ask">Para repasar:</p><div class="tags">${rev.map(i=>`<span class="tag">${P[i].e} ${P[i].n}</span>`).join('')}</div>`:''}
+  <div class="gap"></div><button type="button" class="btn primary wide" id="again">Jugar otra vez</button><div class="gap"></div><button type="button" class="btn wide" id="menu">Volver al menú</button></div>`;
+  const mode=G.mode;$('#again').onclick=()=>play(mode);$('#menu').onclick=home;
+}
+
+function progress(){
+  const done=ALL.filter(i=>mast(i)>=.7).length;
+  app.innerHTML=`
+  <div class="top"><button type="button" class="x" id="back" aria-label="Volver al menú">✕</button><h2 style="flex:1">Mi progreso</h2></div>
+  <section class="card"><div class="row sb"><b>Dominadas</b><b>${done} de ${ALL.length}</b></div><div class="bar"><i style="width:${Math.round(done/ALL.length*100)}%"></i></div>
+  ${ALL.map(id=>{const m=mast(id),n=(S.prog[id]||{}).n||0;return`<div class="prow"><span class="e">${P[id].e}</span><div><div class="n">${P[id].n}</div><div class="s">${n===0?'Nueva':m>=.7?'¡Dominada!':'Practicando'}</div></div><div class="bar"><i style="width:${Math.round(Math.min(1,m/.7)*100)}%"></i></div></div>`;}).join('')}</section>
+  <div class="gap"></div>
+  <section class="card"><b>Insignias</b><div class="badges">${Object.keys(BADGES).map(b=>`<div class="badge ${S.badges.includes(b)?'':'off'}"><span class="e">${BADGES[b][0]}</span>${BADGES[b][1]}</div>`).join('')}</div></section>
+  <div class="gap"></div><button type="button" class="btn wide" id="rs">Borrar mi progreso</button>`;
+  $('#back').onclick=home;
+  let armed=false;
+  $('#rs').onclick=()=>{if(!armed){armed=true;$('#rs').textContent='¿Seguro? Toca otra vez para borrar';return;}S=JSON.parse(JSON.stringify(DEF));save();home();};
+}
+
+home();
+})();
+</script>
+</body>
+</html>

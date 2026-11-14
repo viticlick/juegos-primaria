@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Juegos de Primaria</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F1F6EE;--card:#fff;--ink:#1E1B3A;--ink2:#5A5778;--line:#D3DBC9;--brand:#4B3FB8}
+@media (prefers-color-scheme:dark){:root{--bg:#13112A;--card:#1F1C42;--ink:#EEEBFF;--ink2:#A9A5D0;--line:#38336B;--brand:#8F85FF}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:700 16px/1.45 system-ui,-apple-system,'Segoe UI',sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px 40px}
+h1{font-size:clamp(1.8rem,7vw,2.4rem);margin:0 0 6px;line-height:1.1}
+p.sub{color:var(--ink2);margin:0 0 20px}
+a.card{display:flex;gap:14px;align-items:center;text-decoration:none;color:inherit;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 4px 0 var(--line)}
+a.card:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+a.card:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.em{font-size:2.4rem;line-height:1}
+b{display:block;font-size:1.2rem}
+span.d{color:var(--ink2);font-size:.92rem;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <h1>Juegos de Primaria</h1>
+  <p class="sub">Aprende jugando. Elige un juego:</p>
+  <a class="card" href="mapas/"><span class="em">🌍</span><span><b>Explorador del Mundo</b><span class="d">Continentes y océanos</span></span></a>
+  <a class="card" href="celulas/"><span class="em">🔬</span><span><b>Laboratorio de Células</b><span class="d">Célula animal y célula vegetal</span></span></a>
+</main>
+</body>
+</html>
